@@ -1,0 +1,7 @@
+screenshots/
+venv/
+reports/
+packets/
+*.pyc
+.idea/
+*.log
