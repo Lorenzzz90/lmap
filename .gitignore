@@ -5,3 +5,4 @@ packets/
 *.pyc
 .idea/
 *.log
+*.xlsx

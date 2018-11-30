@@ -3,20 +3,20 @@ import os
 from datetime import datetime
 from scanner import Scanner
 from utils import import_ports, create_logger, create_report_file, write_to_file
-
+from reports import ReportCreator
 
 def program_function():
     if args.fingerprint:
         fingerprint_additional_ports()
     scanner = Scanner(iplist, args)
     scanner.start()
-    report_list = scanner.get_report_list()
-    write_to_file(report, report_list)
-
+    rp = ReportCreator(scanner.get_report_list())
+    rp.excel_report()
 
 
 def main():
     print("Scanning: {0}".format(args.ipaddress))
+
     program_function()
     print("Scan complete.")
 
