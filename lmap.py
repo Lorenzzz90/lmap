@@ -1,3 +1,4 @@
+# coding=utf8
 from argparser import setargparse
 import os
 from datetime import datetime
@@ -5,23 +6,44 @@ from scanner import Scanner
 from utils import import_ports, create_logger, create_report_file, write_to_file
 from reports import ReportCreator
 
-def program_function():
-    if args.fingerprint:
-        fingerprint_additional_ports()
-    scanner = Scanner(iplist, args)
-    scanner.start()
-    rp = ReportCreator(scanner.get_report_list())
-    rp.excel_report()
+if __name__ == '__main__':
+    if os.geteuid() != 0:
+        exit("You need root privileges to run this program.")
+    args = setargparse()
+    logger = create_logger(os.getcwd())
+    dirs = default_save_dirs()
+    iplist = args.ipaddress
+    ports = import_ports(args, os.path.join(os.getcwd(), "wkports.txt"))
+    main()
 
 
 def main():
     print("Scanning: {0}".format(args.ipaddress))
-
     program_function()
     print("Scan complete.")
 
 
+def program_function():
+    if args.fingerprint:
+        fingerprint_additional_ports()
+    if args.screenshot:
+        screenshot_additional_ports()
+    scanner = Scanner(iplist, args)
+    scanner.start()
+    rp = ReportCreator(scanner.get_report_list(), dirs['reports'])
+    rp.excel_report()
+
+
+def screenshot_additional_ports():
+    """Add ports 80 and 443 to ports list"""
+    ssports = [80, 443]
+    for port in ssports:
+        if port not in args.ports:
+            args.ports.append(port)
+
+
 def fingerprint_additional_ports():
+    """Add ports 22, 135, 445 and 3389 to ports list"""
     fpports = [22, 135, 445, 3389]
     for port in fpports:
         if port not in args.ports:
@@ -29,14 +51,15 @@ def fingerprint_additional_ports():
 
 
 def default_save_dirs():
+    """Check for save directories and if non existent it creates them"""
     dirs = {}
     if not os.path.exists(os.path.join(os.getcwd(), "reports")):
         save_dir = os.path.join(os.getcwd(), "reports")
         os.mkdir(save_dir)
-        dirs["save"] = save_dir
+        dirs["reports"] = save_dir
     else:
         save_dir = os.path.join(os.getcwd(), "reports")
-        dirs["save"] = save_dir
+        dirs["reports"] = save_dir
     if not os.path.exists(os.path.join(os.getcwd(), "screenshots")):
         screen_dir = os.path.join(os.getcwd(), "screenshots")
         os.mkdir(screen_dir)
@@ -60,13 +83,3 @@ def default_save_dirs():
         dirs["current_packets_dir"] = current_packets_dir
         args.fingerprint = current_packets_dir
     return dirs
-
-
-if __name__ == '__main__':
-    args = setargparse()
-    logger = create_logger(os.getcwd())
-    dirs = default_save_dirs()
-    report = create_report_file(dirs["save"])
-    iplist = args.ipaddress
-    ports = import_ports(args, os.path.join(os.getcwd(), "wkports.txt"))
-    main()

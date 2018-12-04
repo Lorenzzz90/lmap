@@ -1,8 +1,6 @@
 import socket
 import threading
 
-
-
 from screenshot import screenshot
 from queue import Queue
 import logging
@@ -13,6 +11,7 @@ logging.getLogger(__name__)
 
 
 class Scanner():
+    """This class is the core of the program, it is responsible of the scanning of ips on the given ports"""
     def __init__(self, iplist, args):
         self.iplist = iplist
         self.args = args
@@ -22,6 +21,7 @@ class Scanner():
             self.dir = args.screenshot
 
     class ScannerThread(threading.Thread):
+        """Multithreading class"""
         output_lock = threading.Lock()
 
         def __init__(self, squeue, ports, scan_ports):
@@ -36,6 +36,7 @@ class Scanner():
                 self.squeue.task_done()
 
     def start(self):
+        """Set the queue, initialize the threads and the scanning."""
         threads = 50
         if self.args.threads:
             threads = self.args.threads[0]
@@ -50,7 +51,6 @@ class Scanner():
             idd += 1
         self.queue.join()
 
-
     def get_os(self):
         return self.os
 
@@ -59,10 +59,11 @@ class Scanner():
         timed_out_list = []
         active_ports = []
         conn_ref_list = []
-        banners = {}
+        banners = []
         ports_strings = []
         ipt = self.queue.get()
         id, ip = ipt
+        print("Scanning: {0}".format(str(ip)))
         if self.args.ports is dict():
             portlist = []
             for port in self.args.ports.keys():
@@ -78,7 +79,7 @@ class Scanner():
                     screenshot(ipt, port, self.dir)
                 active_ports.append(str(port))
                 banner = s.recv(1024)
-                banners[port] = banner
+                banners.append(str(banner))
                 logging.info("Answer from : {0} port: {1}".format(str(ip), str(port)))
             except socket.timeout:
                 logging.info(str(ip) + " :" + str(port) + " Timed out")
@@ -91,7 +92,7 @@ class Scanner():
             except Exception as ex:
                 logging.exception(ex)
         osdetected = None
-        if active_ports:
+        if active_ports and self.args.fingerprint:
             fp = Fingerprinting(ip, int(active_ports[0]), self.args)
             fp.tcp_probing()
             osf = Osfinder(fp.get_packet_list(), active_ports)
@@ -100,15 +101,12 @@ class Scanner():
         ip_dict = {}
         ip_dict["Ip"] = str(ip)
         ip_dict["Active Ports"] = active_ports
-        ip_dict["Banner"] = banners
+        ip_dict["Banners"] = banners
         ip_dict["Os Detected"] = osdetected
         ip_dict["Connection Refused"] = conn_ref_list
         ip_dict["Port Scanned"] = ports_strings
 
         self.report[id] = ip_dict
 
-
-
     def get_report_list(self):
         return self.report
-

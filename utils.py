@@ -1,19 +1,7 @@
 import logging
 import os
-from datetime import datetime
 
 logging.getLogger(__name__)
-
-
-def write_to_file(report, report_file):
-    report_file.sort(key=lambda tup: tup[0])
-    with open (report, "w") as f_obj:
-        for id_ip in report_file:
-            f_obj.write(id_ip[1])
-
-
-def create_report_file(dir):
-    return (os.path.join(dir, datetime.now().strftime("%d-%m-%Y_%H^%M^%S.txt")))
 
 
 def import_ports(args, default):
@@ -24,7 +12,7 @@ def import_ports(args, default):
         args.ports = [int(z) for z in args.ports if z not in consecutive_ports]
         for cports in consecutive_ports:
             a, b = cports.split("-")
-            [args.ports.append(x) for x in range (int(a), int(b)+1) ]
+            [args.ports.append(x) for x in range(int(a), int(b) + 1)]
             if int(a) >= int(b):
                 print("Range di porte non valido, metti prima la porta piu bassa,"
                       " scansionerò solo le porte inserite correttamente")
@@ -46,6 +34,7 @@ def import_ports(args, default):
 
 
 def create_logger(base_dir):
+    """Create a logger and save it as info.log"""
     base_dir = base_dir
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)

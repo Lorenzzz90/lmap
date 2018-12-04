@@ -1,18 +1,23 @@
 from openpyxl import Workbook
 from openpyxl.styles import Font, colors
-from openpyxl.chart import PieChart, Reference, BarChart
-from openpyxl.chart.series import DataPoint
 from collections import OrderedDict
+from graph_tool.all import *
+import os
+from datetime import datetime
 
 
 class ReportCreator():
+    """This class is responsible for creating the reports of the scan as an excel file and as a
+    graph(yet to be implemented)"""
 
-    def __init__(self, report):
+    def __init__(self, report, folder):
         self.report = OrderedDict(sorted(report.items(), key=lambda t: t[0]))
+        self.folder = folder
 
-    def excel_report(self, fname='ip_report.xlsx'):
+    def excel_report(self):
+        """Create and save the excel report"""
 
-        def set_headers(hrs, sheet, r=1):
+        def set_headers(hrs, sheet, r=2):
             header_font = Font(color=colors.BLUE, bold=True)
             for h in hrs:
                 cell = sheet.cell(row=r, column=hrs.index(h) + 1, value=h)
@@ -22,21 +27,62 @@ class ReportCreator():
         wb = Workbook()
         ws = wb.active
         ws.title = 'Report'
-        headers = ['Ip Address', 'Active Ports', 'Os Detected', 'Port Scanned', 'Connection refused']
+        cellp = ws.cell(row=1, column=1, value="Ports Scanned")
+        portfont = Font(color=colors.RED, bold=True)
+        cellp.font = portfont
+        col = 2
+        for key, value in self.report.items():
+            if key == 1:
+                pass
+            cell = ws.cell(row=1, column=col, value='-'.join(value.get('Port Scanned')))
+            font = Font(color=colors.RED, bold=True)
+            cell.font = font
+        headers = ['Ip Address', 'Active Ports', 'Banners', 'Os Detected', 'Connection refused']
         ws = set_headers(headers, ws)
-        row = 2
+        row = 3
 
         for key, value in self.report.items():
-            if key == 0:
-                continue
-            ws.cell(row=row, column=headers.index('Ip Address')+1, value=value.get("Ip"))
-            ws.cell(row=row, column=headers.index('Active Ports')+1, value='-'.join(value.get("Active Ports")))
-            ws.cell(row=row, column=headers.index('Os Detected')+1, value=value.get("Os Detected"))
-            ws.cell(row=row, column=headers.index('Port Scanned') + 1, value='-'.join(value.get("Port Scanned")))
-            ws.cell(row=row, column=headers.index('Connection refused')+1, value='-'.join(value.get("Connection Refused")))
+            ws.cell(row=row, column=headers.index('Ip Address') + 1, value=value.get("Ip"))
+            ws.cell(row=row, column=headers.index('Active Ports') + 1, value='-'.join(value.get("Active Ports")))
+            ws.cell(row=row, column=headers.index('Banners') + 1, value='-'.join(value.get("Banners")))
+            ws.cell(row=row, column=headers.index('Os Detected') + 1, value=value.get("Os Detected"))
+            ws.cell(row=row, column=headers.index('Connection refused') + 1,
+                    value='-'.join(value.get("Connection Refused")))
             row += 1
-        wb.save(fname)
 
+        for col in ws.columns:
+            max_length = 0
+            column = col[0].column
+            for cell in col:
+                if cell.coordinate == "B1":
+                    continue
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 2) * 1.2
+            ws.column_dimensions[column].width = adjusted_width
 
+        wb.save((os.path.join(self.folder, datetime.now().strftime("%d-%m-%Y_%H:%M:%S.xlsx"))))
 
+    def toGraph(self, fname='graph.png'):
+        """Create and save the png graph / work in progress"""
+        VERTEX = {}
+        g1 = Graph()
+        g2 = Graph()
+        VERTEX_NAME = g1.new_vertex_property("string")
 
+        def add_vertex(port):
+            if port not in VERTEX:
+                VERTEX[port] = {'vertex': None, 'connected_to': []}
+                VERTEX[port]['vertex'] = g1.add_vertex()
+                VERTEX_NAME[VERTEX[port]['vertex']] = port
+
+        for key in self.report.keys():
+            active_ports = self.report[key]['Active Ports']
+            if active_ports:
+                for port in active_ports:
+                    add_vertex(port)
+
+        graph_draw(g1, vertex_text=VERTEX_NAME, vertex_font_size=90, output_size=(3000, 3000), output=fname)
