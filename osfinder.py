@@ -19,13 +19,13 @@ class Osfinder():
         return self.os_detected()
 
     def check_answering_ports(self):
-        if 22 in self.ports:
+        if "22" in self.ports:
             self.linux += 3
-        if 3389 in self.ports:
+        if "3389" in self.ports:
             self.windows += 2
-        if 135 in self.ports:
+        if "135" in self.ports:
             self.windows += 2
-        if 445 in self.ports:
+        if "445" in self.ports:
             self.windows += 2
 
     def check_window_scale_value(self):
@@ -47,8 +47,8 @@ class Osfinder():
 
     def os_detected(self):
         if self.windows > self.linux:
-            return "Most likely: Windows"
+            return "Windows"
         elif self.linux > self.windows:
-            return "Most likely: Linux"
+            return "Linux"
         else:
             return "Cannot detect an os"

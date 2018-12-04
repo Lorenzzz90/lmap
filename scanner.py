@@ -1,8 +1,6 @@
 import socket
 import threading
 
-
-
 from screenshot import screenshot
 from queue import Queue
 import logging
@@ -13,18 +11,17 @@ logging.getLogger(__name__)
 
 
 class Scanner():
+    """This class is the core of the program, it is responsible of the scanning of ips on the given ports"""
     def __init__(self, iplist, args):
         self.iplist = iplist
         self.args = args
-        self.report = []
-        self.report_two = {}
+        self.report = {}
         self.queue = Queue()
         if args.screenshot:
             self.dir = args.screenshot
-        self.os = ""
-        self.progress = Queue()
 
     class ScannerThread(threading.Thread):
+        """Multithreading class"""
         output_lock = threading.Lock()
 
         def __init__(self, squeue, ports, scan_ports):
@@ -39,7 +36,8 @@ class Scanner():
                 self.squeue.task_done()
 
     def start(self):
-        threads = 30
+        """Set the queue, initialize the threads and the scanning."""
+        threads = 50
         if self.args.threads:
             threads = self.args.threads[0]
         for i in range(threads):
@@ -53,7 +51,6 @@ class Scanner():
             idd += 1
         self.queue.join()
 
-
     def get_os(self):
         return self.os
 
@@ -62,9 +59,11 @@ class Scanner():
         timed_out_list = []
         active_ports = []
         conn_ref_list = []
-        banners = {}
+        banners = []
+        ports_strings = []
         ipt = self.queue.get()
         id, ip = ipt
+        print("Scanning: {0}".format(str(ip)))
         if self.args.ports is dict():
             portlist = []
             for port in self.args.ports.keys():
@@ -72,66 +71,42 @@ class Scanner():
             self.args.ports = portlist
         for port in self.args.ports:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            ports_strings.append(str(port))
             try:
                 s.settimeout(1)
                 s.connect((str(ip), port))
-
                 if self.args.screenshot and (port in [80, 443]):
                     screenshot(ipt, port, self.dir)
-                active_ports.append(port)
+                active_ports.append(str(port))
                 banner = s.recv(1024)
-                banners[port] = banner
-                if banner and self.args.banner:
-                    active_ports.append(banner)
-
+                banners.append(str(banner))
                 logging.info("Answer from : {0} port: {1}".format(str(ip), str(port)))
             except socket.timeout:
-                if self.args.verbose:
-                    logging.info(str(ip) + " :" + str(port) + " Timed out")
-                    timed_out_list.append(port)
-                else:
-                    pass
+                logging.info(str(ip) + " :" + str(port) + " Timed out")
+                timed_out_list.append(str(port))
             except ConnectionRefusedError:
-                if self.args.verbose:
-                    logging.info(str(ip) + " :" + str(port) + " Connection Refused")
-                    conn_ref_list.append(port)
-                else:
-                    pass
+                logging.info(str(ip) + " :" + str(port) + " Connection Refused")
+                conn_ref_list.append(str(port))
             except OSError as exc:
                 logging.exception(exc)
             except Exception as ex:
                 logging.exception(ex)
-        if self.args.fingerprint and active_ports:
-            fp = Fingerprinting(ip, active_ports[0], self.args)
+        osdetected = None
+        if active_ports and self.args.fingerprint:
+            fp = Fingerprinting(ip, int(active_ports[0]), self.args)
             fp.tcp_probing()
             osf = Osfinder(fp.get_packet_list(), active_ports)
             osdetected = osf.check_os()
-        if self.args.verbose:
-            if self.args.fingerprint:
-                self.report.append((id, "{0} :\n\tOs Detected: {1}\n\t"
-                                        "Answer from: {2}\n\t"
-                                        "Timed out: {3}\n\t"
-                                        "Connection refused: {4}\n".format(str(ip), osdetected, str(active_ports),
-                                                                           str(timed_out_list), str(conn_ref_list))))
 
-            else:
-                self.report.append((id, "{0} :\n\tAnswer from: {1}\n\t"
-                                        "Timed out: {2}\n\t"
-                                        "Connection refused: {3}\n".format(str(ip), str(active_ports), str(timed_out_list), str(conn_ref_list))))
-        elif active_ports:
-            if self.args.fingerprint:
-                self.report.append((id,
-                                    "Answer from: {0} ports: {1} Os Detected: {2}\n".format(str(ip), str(active_ports),
-                                                                                            osdetected)))
-            else:
-                self.report.append((id, "Answer from: {0} ports: {1}\n".format(str(ip), str(active_ports))))
+        ip_dict = {}
+        ip_dict["Ip"] = str(ip)
+        ip_dict["Active Ports"] = active_ports
+        ip_dict["Banners"] = banners
+        ip_dict["Os Detected"] = osdetected
+        ip_dict["Connection Refused"] = conn_ref_list
+        ip_dict["Port Scanned"] = ports_strings
 
-
-
-
-
-
+        self.report[id] = ip_dict
 
     def get_report_list(self):
         return self.report
-
