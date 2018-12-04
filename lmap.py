@@ -3,7 +3,7 @@ from argparser import setargparse
 import os
 from datetime import datetime
 from scanner import Scanner
-from utils import import_ports, create_logger, create_report_file, write_to_file
+from utils import import_ports, create_logger
 from reports import ReportCreator
 
 if __name__ == '__main__':
