@@ -18,7 +18,7 @@ def screenshot(iptuple, port, dir):
         display = Display(visible=0, size=(1980, 1024))
         display.start()
         driver = webdriver.Chrome(chrome_options=get_selenium_options())
-        driver.set_page_load_timeout(3)
+        driver.set_page_load_timeout(6)
         id, ip = iptuple
         if port == 80:
             driver.get('http://' + str(ip))

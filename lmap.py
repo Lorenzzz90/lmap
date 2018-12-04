@@ -6,15 +6,7 @@ from scanner import Scanner
 from utils import import_ports, create_logger
 from reports import ReportCreator
 
-if __name__ == '__main__':
-    if os.geteuid() != 0:
-        exit("You need root privileges to run this program.")
-    args = setargparse()
-    logger = create_logger(os.getcwd())
-    dirs = default_save_dirs()
-    iplist = args.ipaddress
-    ports = import_ports(args, os.path.join(os.getcwd(), "wkports.txt"))
-    main()
+
 
 
 def main():
@@ -83,3 +75,14 @@ def default_save_dirs():
         dirs["current_packets_dir"] = current_packets_dir
         args.fingerprint = current_packets_dir
     return dirs
+
+
+if __name__ == '__main__':
+    if os.geteuid() != 0:
+        exit("You need root privileges to run this program.")
+    args = setargparse()
+    logger = create_logger(os.getcwd())
+    dirs = default_save_dirs()
+    iplist = args.ipaddress
+    ports = import_ports(args, os.path.join(os.getcwd(), "wkports.txt"))
+    main()

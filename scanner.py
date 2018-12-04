@@ -79,7 +79,7 @@ class Scanner():
                     screenshot(ipt, port, self.dir)
                 active_ports.append(str(port))
                 banner = s.recv(1024)
-                banners.append(str(banner))
+                banners.append("port: {0} ||{1}||".format(str(port), str(banner)))
                 logging.info("Answer from : {0} port: {1}".format(str(ip), str(port)))
             except socket.timeout:
                 logging.info(str(ip) + " :" + str(port) + " Timed out")
