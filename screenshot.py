@@ -24,6 +24,8 @@ def screenshot(iptuple, port, dir):
             driver.get('http://' + str(ip))
             ipcorrect = str(ip)
             ipcorrect = ipcorrect.replace(".", "_")
+            if not os.path.exists(dir):
+                os.mkdir(dir)
             driver.save_screenshot(os.path.join(dir, datetime.now().strftime("%d-%m-%Y_%H^%M^%S") +
                                                 "__{0}_{1}_screenshot.png".format(ipcorrect, str(port))))
             logging.info("Screenshot Taken from : {0} port: {1}".format(ipcorrect, str(port)))
@@ -31,6 +33,8 @@ def screenshot(iptuple, port, dir):
             driver.get('https://' + str(ip))
             ipcorrect = str(ip)
             ipcorrect = ipcorrect.replace(".", "_")
+            if not os.path.exists(dir):
+                os.mkdir(dir)
             driver.save_screenshot(os.path.join(dir, datetime.now().strftime("%d-%m-%Y_%H^%M^%S") +
                                                 "__({0})_{1}_screenshot.png".format(ipcorrect, str(port))))
             logging.info("Screenshot Taken from : {0} port: {1}".format(ipcorrect, str(port)))

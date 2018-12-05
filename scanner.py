@@ -40,6 +40,8 @@ class Scanner():
         threads = 50
         if self.args.threads:
             threads = self.args.threads[0]
+        if threads > self.iplist.num_addresses:
+            threads = self.iplist.num_addresses
         for i in range(threads):
             t = self.ScannerThread(self.queue, self.args.ports, self.scan_ports)
             t.setDaemon(True)

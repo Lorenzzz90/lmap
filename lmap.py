@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from scanner import Scanner
 from utils import import_ports, create_logger
-from reports import ReportCreator
+from excelreport import ReportCreator
 
 
 
@@ -22,8 +22,19 @@ def program_function():
         screenshot_additional_ports()
     scanner = Scanner(iplist, args)
     scanner.start()
-    rp = ReportCreator(scanner.get_report_list(), dirs['reports'])
-    rp.excel_report()
+    if args.excel:
+        rp = ReportCreator(scanner.get_report_list(), dirs['reports'])
+        rp.excel_report()
+    if args.graph:
+        try:
+            from graphcreator import ToGraph
+            graph = ToGraph(scanner.get_report_list())
+            graph.write_graph()
+        except ImportError as exc:
+            logger.exception(exc)
+            print("You need graph-tool installed to draw a graph, please visit https://graph-tool.skewed.de/")
+
+
 
 
 def screenshot_additional_ports():
@@ -61,7 +72,6 @@ def default_save_dirs():
         dirs["screen"] = screen_dir
     if args.screenshot:
         time_screen_dir = os.path.join(screen_dir, datetime.now().strftime("%d-%m-%Y_%H^%M^%S"))
-        os.mkdir(time_screen_dir)
         dirs["timescreen"] = time_screen_dir
         args.screenshot = time_screen_dir
     if args.fingerprint and not os.path.exists(os.path.join(os.getcwd(), "packets")):

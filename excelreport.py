@@ -1,9 +1,9 @@
 from openpyxl import Workbook
 from openpyxl.styles import Font, colors
 from collections import OrderedDict
-from graph_tool.all import *
 import os
 from datetime import datetime
+
 
 
 class ReportCreator():
@@ -13,6 +13,7 @@ class ReportCreator():
     def __init__(self, report, folder):
         self.report = OrderedDict(sorted(report.items(), key=lambda t: t[0]))
         self.folder = folder
+
 
     def excel_report(self):
         """Create and save the excel report"""
@@ -66,23 +67,3 @@ class ReportCreator():
 
         wb.save((os.path.join(self.folder, datetime.now().strftime("%d-%m-%Y_%H:%M:%S.xlsx"))))
 
-    def toGraph(self, fname='graph.png'):
-        """Create and save the png graph / work in progress"""
-        VERTEX = {}
-        g1 = Graph()
-        g2 = Graph()
-        VERTEX_NAME = g1.new_vertex_property("string")
-
-        def add_vertex(port):
-            if port not in VERTEX:
-                VERTEX[port] = {'vertex': None, 'connected_to': []}
-                VERTEX[port]['vertex'] = g1.add_vertex()
-                VERTEX_NAME[VERTEX[port]['vertex']] = port
-
-        for key in self.report.keys():
-            active_ports = self.report[key]['Active Ports']
-            if active_ports:
-                for port in active_ports:
-                    add_vertex(port)
-
-        graph_draw(g1, vertex_text=VERTEX_NAME, vertex_font_size=90, output_size=(3000, 3000), output=fname)
