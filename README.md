@@ -4,7 +4,7 @@
 A very simplistic version of nmap written entirely in python
 ------
   
- ###Installation
+ ### Installation
  
  -Download and unzip the program.
  
@@ -14,8 +14,8 @@ A very simplistic version of nmap written entirely in python
   (Graph-tool must to be installed locally if you want to generate a graph,   
   more info on https://graph-tool.skewed.de/)
   
- ###Usage 
- #####Basic usage
+ ### Usage 
+ ##### Basic usage
   -You can only run the program from a terminal, a GUI is not implemented yet  
   -To run the program you need administrator privileges
   
@@ -41,7 +41,7 @@ A very simplistic version of nmap written entirely in python
   
   * `sudo python3 lmap.py 10.10.0.0/16 -e`
   
-  #####Custom ports | --ports | -p
+  ##### Custom ports | --ports | -p
   
   If you want to perform a scan on custom ports you can pass the -p argument and manually select the ports 
   to scan for every ip.
@@ -56,7 +56,7 @@ A very simplistic version of nmap written entirely in python
   * `sudo python3 lmap.py 172.16.0.0/16 -p 22 80 100-200` perform a scan on the whole network on the ports
   22, 80 and all the port inside the range 100 and 200 (22, 80, 100, 101, 102..........199, 200) 
   
-  #####Screenshots | --ports | -p
+  ##### Screenshots | --ports | -p
   
   You can take a screenshots on port 80 and 443 if the port is open and a service is exposed on those 
   by passing the -s argument, a screenshot will be saved in the screenshot folder with the  
@@ -71,7 +71,7 @@ A very simplistic version of nmap written entirely in python
   * `sudo python3 lmap.py 192.168.1.0/24 -s` the program will try to take a screenshot on port 80 and 443 on
   every ip in the passed network
   
-  #####Multithreading | --threads | -t
+  ##### Multithreading | --threads | -t
 
 If you plan to scan a large network, you can pass the -t threads to make the process faster  
 (default is 50 threads) every thread will take care of a single ip.
@@ -84,7 +84,7 @@ addresses simultaneously
 Disclaimer: depending on you pc specification running too many threads could results in crashes and loss
 of performance 
 
-#####Fingerprinting and basic OS Detection | --fingerprint | -f
+##### Fingerprinting and basic OS Detection | --fingerprint | -f
 
 You can perform some fingerprinting actions by passing the -f argument, the program will add ports 
 22, 135, 445 and 3389 to the port list since those are common ports that are usually mutually used by 
@@ -101,7 +101,7 @@ Example:
 * `sudo python3 192.168.1.3 -f -e` the program will try to determine the os running on the given ip and
 print the result in an excel file inside the reports folder.
 
-#####Custom ports from file | --fileports | -fp 
+##### Custom ports from file | --fileports | -fp 
 
 You can pass a custom file and do a scan on the ports contained on that file with the -fp argument,
 the text inside the file must be formatted as in the wkports.txt default file, port number, a single blank space 
@@ -116,7 +116,7 @@ Examples:
 
 *`sudo python3 lmap.py 10.10.10.0/24 -fp <path of the file>`
 
-#####Graph | --graph | -g WORK IN PROGRESS 
+##### Graph | --graph | -g WORK IN PROGRESS 
 This part of the program is still in development and it will be added later
   
  
