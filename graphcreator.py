@@ -1,7 +1,6 @@
 from graph_tool.all import *
 
 
-
 class ToGraph():
     """Create and save the png graph / work in progress"""
 

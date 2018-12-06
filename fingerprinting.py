@@ -8,6 +8,7 @@ logging.getLogger(__name__)
 class Fingerprinting():
     """This class is responsible for creating, sending, analyzing and saving packets to detect an os or
     analyze the answer packets"""
+
     def __init__(self, ip, port, args):
         self.ip = str(ip)
         self.pkts = []
@@ -66,7 +67,6 @@ class Fingerprinting():
                 check_port.append(port)
         self.pkts = PacketList()
         self.pkts = set_answer
-
 
     def send_packet(self, pkt):
         """Send a packet"""

@@ -7,8 +7,6 @@ from utils import import_ports, create_logger
 from excelreport import ReportCreator
 
 
-
-
 def main():
     print("Scanning: {0}".format(args.ipaddress))
     program_function()
@@ -33,8 +31,6 @@ def program_function():
         except ImportError as exc:
             logger.exception(exc)
             print("You need graph-tool installed to draw a graph, please visit https://graph-tool.skewed.de/")
-
-
 
 
 def screenshot_additional_ports():

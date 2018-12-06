@@ -5,7 +5,6 @@ import os
 from datetime import datetime
 
 
-
 class ReportCreator():
     """This class is responsible for creating the reports of the scan as an excel file and as a
     graph(yet to be implemented)"""
@@ -13,7 +12,6 @@ class ReportCreator():
     def __init__(self, report, folder):
         self.report = OrderedDict(sorted(report.items(), key=lambda t: t[0]))
         self.folder = folder
-
 
     def excel_report(self):
         """Create and save the excel report"""
@@ -66,4 +64,3 @@ class ReportCreator():
             ws.column_dimensions[column].width = adjusted_width
 
         wb.save((os.path.join(self.folder, datetime.now().strftime("%d-%m-%Y_%H:%M:%S.xlsx"))))
-

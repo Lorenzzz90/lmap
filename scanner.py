@@ -12,6 +12,7 @@ logging.getLogger(__name__)
 
 class Scanner():
     """This class is the core of the program, it is responsible of the scanning of ips on the given ports"""
+
     def __init__(self, iplist, args):
         self.iplist = iplist
         self.args = args
@@ -80,8 +81,6 @@ class Scanner():
                 if self.args.screenshot and (port in [80, 443]):
                     screenshot(ipt, port, self.dir)
                 active_ports.append(str(port))
-                banner = s.recv(1024)
-                banners.append("port: {0} ||{1}||".format(str(port), str(banner)))
                 logging.info("Answer from : {0} port: {1}".format(str(ip), str(port)))
             except socket.timeout:
                 logging.info(str(ip) + " :" + str(port) + " Timed out")
@@ -93,6 +92,13 @@ class Scanner():
                 logging.exception(exc)
             except Exception as ex:
                 logging.exception(ex)
+            if str(port) in active_ports:
+                try:
+                    banner = s.recv(1024)
+                    banners.append("port: {0} ||{1}||".format(str(port), str(banner)))
+                except socket.timeout:
+                    logging.info("Banner request timed out")
+
         osdetected = None
         if active_ports and self.args.fingerprint:
             fp = Fingerprinting(ip, int(active_ports[0]), self.args)
