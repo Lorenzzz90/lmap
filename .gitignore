@@ -8,3 +8,4 @@ packets/
 *.xlsx
 *.png
 .coverage
+*.svg

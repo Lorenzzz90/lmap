@@ -41,6 +41,15 @@ A very simplistic version of nmap written entirely in python
   
   * `sudo python3 lmap.py 10.10.0.0/16 -e`
   
+  #### Histogram | --histogram | -h
+  If you want to create an histogram which ranks the most open ports on a given network you can pass the -i
+  argument, it will create a file called open_ports.svg in the main directory, you can use a web browser to
+  visualize the file.
+  
+  Example:
+  
+  *`sudo python3 lmap.py 192.168.1.0/24 -i` 
+  
   #### Custom ports | --ports | -p
   
   If you want to perform a scan on custom ports you can pass the -p argument and manually select the ports 
@@ -74,7 +83,7 @@ A very simplistic version of nmap written entirely in python
   #### Multithreading | --threads | -t
 
 If you plan to scan a large network, you can pass the -t threads to make the process faster  
-(default is 50 threads) every thread will take care of a single ip.
+(default is 52 threads) every thread will take care of a single ip.
 
 Example:
 

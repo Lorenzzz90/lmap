@@ -5,6 +5,7 @@ from datetime import datetime
 from scanner import Scanner
 from utils import import_ports, create_logger
 from excelreport import ReportCreator
+from histogram import Histogram
 
 
 def main():
@@ -31,6 +32,9 @@ def program_function():
         except ImportError as exc:
             logger.exception(exc)
             print("You need graph-tool installed to draw a graph, please visit https://graph-tool.skewed.de/")
+    if args.histogram:
+        ist = Histogram(scanner.get_report_list())
+        ist.create_histogram()
 
 
 def screenshot_additional_ports():
@@ -84,8 +88,8 @@ def default_save_dirs():
 
 
 if __name__ == '__main__':
-    if os.geteuid() != 0:
-        exit("You need root privileges to run this program.")
+    #if os.geteuid() != 0:
+    #    exit("You need root privileges to run this program.")
     args = setargparse()
     logger = create_logger(os.getcwd())
     dirs = default_save_dirs()

@@ -16,12 +16,14 @@ def setargparse():
     parser.add_argument("ipaddress", help="Examples: 192.168.1.1 or 192.168.1.0/24", type=ip_format)
     parser.add_argument("--fingerprint", "-f", action="store_true", help="Send and save packets to detect an os")
     parser.add_argument("--threads", "-t", nargs=1, type=int,
-                        help="Select the number of threads the program should use. Default is 50 ")
+                        help="Select the number of threads the program should use. Default is 52 ")
     parser.add_argument("--screenshot", "-s", action="store_true", help="Try to take a screenshot on ports 80 and 443")
     parser.add_argument("--excel", "-e", action="store_true", help="Write a report in an excel file")
     parser.add_argument("--graph", "-g", action="store_true",
                         help="Work in progress || Draw a graph, graph-tool is required "
                              "https://graph-tool.skewed.de/")
+    parser.add_argument("--histogram", "-i", action="store_true", help="Create an histogram which ranks the open ports"
+                                                                       "on the given network")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--ports", "-p", nargs='+', help="Select the ports to scan Example: 22 80 200-300")
     group.add_argument("--fileports", "-fp", nargs=1, type=str, help="Select a file to import the ports to scan")

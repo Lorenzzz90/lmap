@@ -38,7 +38,7 @@ class Scanner():
 
     def start(self):
         """Set the queue, initialize the threads and the scanning."""
-        threads = 50
+        threads = 52
         if self.args.threads:
             threads = self.args.threads[0]
         if threads > self.iplist.num_addresses:
