@@ -7,3 +7,4 @@ packets/
 *.log
 *.xlsx
 *.png
+.coverage
