@@ -11,6 +11,9 @@ A very simplistic version of nmap written entirely in python
  -From a terminal navigate into the folders and the run the command:  
  `pip install -r requirements.txt`
  
+ -You will also need xvfb installed to take screenshots in headless mode, if you are running this in windws,
+ you need to comment out the lines 1, 18, 19 and 42 from the screenshot.py file.
+ 
   (Graph-tool must to be installed locally if you want to generate a graph,   
   more info on https://graph-tool.skewed.de/)
   
@@ -20,8 +23,7 @@ A very simplistic version of nmap written entirely in python
   -To run the program you need administrator privileges
   
   -Navigate into the folder and execute the program with administrator privileges passing an   
-    Ip Address or
-  a network as arguments.
+    Ip Address or a network as arguments.
   
   Examples:
   

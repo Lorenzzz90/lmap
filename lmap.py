@@ -13,14 +13,7 @@ def main():
     program_function()
     print("Scan complete.")
 
-
-def program_function():
-    if args.fingerprint:
-        fingerprint_additional_ports()
-    if args.screenshot:
-        screenshot_additional_ports()
-    scanner = Scanner(iplist, args)
-    scanner.start()
+def reports(scanner):
     if args.excel:
         rp = ReportCreator(scanner.get_report_list(), dirs['reports'])
         rp.excel_report()
@@ -35,6 +28,20 @@ def program_function():
     if args.histogram:
         ist = Histogram(scanner.get_report_list())
         ist.create_histogram()
+
+def program_function():
+    try:
+        if args.fingerprint:
+            fingerprint_additional_ports()
+        if args.screenshot:
+            screenshot_additional_ports()
+        scanner = Scanner(iplist, args)
+        scanner.start()
+    except KeyboardInterrupt:
+        print("\nWriting reports before exiting.")
+    reports(scanner)
+
+
 
 
 def screenshot_additional_ports():
