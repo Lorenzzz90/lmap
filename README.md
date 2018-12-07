@@ -43,7 +43,7 @@ A very simplistic version of nmap written entirely in python
   
   * `sudo python3 lmap.py 10.10.0.0/16 -e`
   
-  #### Histogram | --histogram | -h
+  #### Histogram | --histogram | -i
   If you want to create an histogram which ranks the most open ports on a given network you can pass the -i
   argument, it will create a file called open_ports.svg in the main directory, you can use a web browser to
   visualize the file.
